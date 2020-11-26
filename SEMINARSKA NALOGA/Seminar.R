@@ -56,3 +56,29 @@ boxplot(data$poraba[selWeekendHouses] / 2, data$poraba[selWeekHouses] / 5, ylab 
 abline(h=mean(data$poraba[selWeekendHouses] / 2), col="red")
 abline(h=mean(data$poraba[selWeekHouses] / 5), col="blue")
 
+barplot(data$datum, data$norm_poraba)
+
+tab <- table(data$datum, data$norm_poraba)
+tabAll <- sum(colSums(tab))
+ratioNizka <- (tab[,1] + tab[,4]) / tabAll
+barplot(ratioNizka)
+
+ratioVZeloV <- (tab[,3] + tab[,5]) / tabAll
+barplot(ratio)
+plot(x=seq(as.Date("2015-12-31"), as.Date("2016-12-31"), by="days"), y=ratioVZeloV, type="l",
+     xlab="Dates", ylab="(VISOKA + ZELOVISOKA) / ALL")
+plot(x=seq(as.Date("2015-12-31"), as.Date("2016-12-31"), by="days"), y=ratioNizka, type="l",
+     xlab="Dates", ylab="(NIZKA) / ALL", main="The ratio of LOW(NIZKA, ZELONIZKA) and electricity usage 
+     through the year")
+#suggesting that we should add an atribute for the season
+
+addPreviosDay <- function(data){
+  if(data$datum > "2015-01-01"){
+    #temp <- table(data$datum -1, data$temp_zraka)
+    temp <- aggregate(temp_zraka ~ datum - 1, data=data,mean)
+  }
+}
+sel <- data$datum > "2016-01-01"
+temp <- aggregate(temp_zraka ~ (datum - 1) + stavba, data=data[sel,],mean)
+
+
