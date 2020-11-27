@@ -36,9 +36,9 @@ boxplot(data$poraba[selSummer], data$poraba[selWinter], names = c("Summer break"
 #checking if there is any corr btw the weekend and working days
 selWeekend <- weekdays(data$datum) %in% c("sobota", "nedelja")
 selWeekDays <- weekdays(data$datum) %in% c("ponedeljek", "torek", "sreda", "četrtek", "petek")
-boxplot(data$poraba[selWeekend], data$poraba[selWeekDays],names=c("Weekend", "Weekdays") ,main="Boxplot showing the differences of eng use btw the weekend and weekdays")
-abline(h=median(data$poraba[selWeekend]), col="green")
-abline(h=median(data$poraba[selWeekDays]), col="blue")
+boxplot(data$poraba[selWeekend] / 2, data$poraba[selWeekDays] / 5,names=c("Weekend", "Weekdays") ,main="Boxplot showing the differences of eng use btw the weekend and weekdays")
+abline(h=median(data$poraba[selWeekend] / 2), col="green")
+abline(h=median(data$poraba[selWeekDays] / 5), col="blue")
 
 selWeekendHouses <- data$namembnost == "stanovanjska" & selWeekend
 selWeekendJavno <- data$namembnost == "javno_storitvena" & selWeekend
@@ -50,3 +50,33 @@ legend("topleft", legend=c("Median stanovanj", "Median javno storitvena"),
        col=c("red", "blue"), lty=1:1, cex=0.8,
        box.lty=2, box.lwd=2, box.col="green")
 
+selWeekHouses <- data$namembnost == "stanovanjska" & selWeekDays
+#doesn't make sence bc there are multiple weekdays and 2 days for weekend
+boxplot(data$poraba[selWeekendHouses] / 2, data$poraba[selWeekHouses] / 5, ylab = "Poraba elektrike(kWh)", names =c("Weekend", "Weekdays"), main="Stanovanja")
+abline(h=mean(data$poraba[selWeekendHouses] / 2), col="red")
+abline(h=mean(data$poraba[selWeekHouses] / 5), col="blue")
+
+barplot(data$datum, data$norm_poraba)
+
+tab <- table(data$datum, data$norm_poraba)
+tabAll <- sum(colSums(tab))
+ratioNizka <- (tab[,1] + tab[,4]) / tabAll
+barplot(ratioNizka)
+
+ratioVZeloV <- (tab[,3] + tab[,5]) / tabAll
+barplot(ratio)
+plot(x=seq(as.Date("2015-12-31"), as.Date("2016-12-31"), by="days"), y=ratioVZeloV, type="l",
+     xlab="Dates", ylab="(VISOKA + ZELOVISOKA) / ALL")
+plot(x=seq(as.Date("2015-12-31"), as.Date("2016-12-31"), by="days"), y=ratioNizka, type="l",
+     xlab="Dates", ylab="(NIZKA) / ALL", main="The ratio of LOW(NIZKA, ZELONIZKA) and electricity usage 
+     through the year")
+#suggesting that we should add an atribute for the season
+
+addPreviosDay <- function(data){
+  if(data$datum > "2015-01-01"){
+    #temp <- table(data$datum -1, data$temp_zraka)
+    temp <- aggregate(temp_zraka ~ datum - 1, data=data,mean)
+  }
+}
+sel <- data$datum > "2016-01-01"
+temp <- aggregate(temp_zraka ~ (datum - 1) + stavba, data=data[sel,],mean)
