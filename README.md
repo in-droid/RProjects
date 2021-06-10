@@ -1,1 +1,3 @@
-# RProject for predicting energy usage (classification and regression) with machine learning.
+# RProject for predicting energy usage 
+## Classification and regression with machine learning
+
